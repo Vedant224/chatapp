@@ -3,11 +3,11 @@ import {
 } from "../models/user.model.js";
 import jwt from "jsonwebtoken"
 
-export const protectRoute = async (req, resizeBy, next) => {
+export const protectRoute = async (req, res, next) => {
     try {
         const token = req.headers.token;
 
-        const decoded = JsonWebTokenError.verify(token, process.env.JWT_SECRET)
+        const decoded = jwt.verify(token, process.env.JWT_SECRET)
         const user = await User.findById(decoded.userId).select("-password");
         if (!user) return res.json({
             success: false,
