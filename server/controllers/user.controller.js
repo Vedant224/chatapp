@@ -24,7 +24,7 @@ export const signup = async (req, res) => {
                 message: "Missing Details"
             })
         }
-        const user = User.findOne({
+        const user = await User.findOne({
             email
         });
         if (user) {
@@ -80,7 +80,7 @@ export const login = async (req, res) => {
             });
 
         }
-        const token = generateToken(newUser._id)
+        const token = generateToken(userData._id)
 
         res.json({
             success: true,
@@ -135,7 +135,7 @@ export const updateProfile = async (req, res) => {
                 new: true
             })
         }
-        res.json({success:true,user:updated})
+        res.json({success:true,user:updatedUser})
     } catch (error) {
         console.log(error.message)
         res.json({success:false,message:error.message})

@@ -15,7 +15,7 @@ import {
 export const getUsersForSidebar = async (req, res) => {
     try {
         const userId = req.user._id;
-        const filteredUsers = await User.fing({
+        const filteredUsers = await User.find({
             _id: {
                 $ne: userId
             }
@@ -75,7 +75,7 @@ export const getMessages = async (req, res) => {
 
         res.json({
             success: true,
-            messages
+            messages,
         })
     } catch (error) {
         console.log(error.message)
@@ -96,7 +96,7 @@ export const markMessageAsSeen = async (req, res) => {
             seen: true
         })
         res.json({
-            succes: true
+            success: true
         })
     } catch (error) {
         console.log(error.message)
@@ -117,6 +117,13 @@ export const sendMessage = async (req, res) => {
         const receiverId = req.params.id;
         const senderId = req.user._id;
 
+        if ((!text || text.trim() === "") && !image) {
+            return res.json({
+                success: false,
+                message: "Message cannot be empty"
+            });
+        }
+
         let imageUrl;
         if (image) {
             const uploadResponse = await cloudinary.uploader.upload(image)
@@ -126,8 +133,8 @@ export const sendMessage = async (req, res) => {
         const newMessage = await Message.create({
             senderId,
             receiverId,
-            text,
-            image: imageUrl
+            text: text || "",
+            image: imageUrl || ""
         })
 
         const receiverSocketId = userSocketMap[receiverId];
@@ -136,7 +143,7 @@ export const sendMessage = async (req, res) => {
         }
 
         res.json({
-            succes: true,
+            success: true,
             newMessage
         });
 
